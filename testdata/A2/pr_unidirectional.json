@@ -1,0 +1,9 @@
+{
+  "closingIssuesReferences": [
+    {"id": "I_kwDODKw3uc8AAAABAdc2OQ", "number": 13280}
+  ],
+  "headRefName": "fix/projects-v2-ignorable-error",
+  "mergeCommit": {"oid": "6c470f60803784e1558b626022677c53dccb6016"},
+  "number": 13281,
+  "state": "MERGED"
+}
