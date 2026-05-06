@@ -122,14 +122,30 @@ func parseGist(b []byte) (gistResponse, error) {
 	return r, nil
 }
 
-// expectedPrefixes maps a file extension to the set of acceptable first
-// non-whitespace tokens. An entry of nil/empty means "no sanity rule".
-var expectedPrefixes = map[string][]string{
-	".html": {"<"},
-	".htm":  {"<"},
-	".xml":  {"<"},
-	".svg":  {"<"},
-	".json": {"{", "["},
+// prefixRule encodes one extension's acceptable starting tokens.
+// `accept` lists the literal prefixes that pass the check; `display` is the
+// human-readable rendering used in the warning ("'[' or '{'").
+type prefixRule struct {
+	accept  []string
+	display string
+}
+
+// expectedPrefixes maps a file extension to its rule. Following the §A2 / §A4
+// spec wording exactly:
+//
+//	.html / .htm → '<!'
+//	.json        → '[' or '{'
+//	.py          → shebang or 'import' / 'from' / 'def' / 'class'
+//
+// .xml and .svg are added because they are common gist contents and their
+// first non-whitespace token is unambiguous; the rule mirrors the HTML one.
+var expectedPrefixes = map[string]prefixRule{
+	".html": {accept: []string{"<!"}, display: "'<!'"},
+	".htm":  {accept: []string{"<!"}, display: "'<!'"},
+	".xml":  {accept: []string{"<?", "<"}, display: "'<?' or '<'"},
+	".svg":  {accept: []string{"<?", "<"}, display: "'<?' or '<'"},
+	".json": {accept: []string{"[", "{"}, display: "'[' or '{'"},
+	".py":   {accept: []string{"#!", "import ", "from ", "def ", "class "}, display: "shebang or 'import' / 'from' / 'def' / 'class'"},
 }
 
 // sanityCheck returns a warning message when content's first non-whitespace
@@ -137,19 +153,30 @@ var expectedPrefixes = map[string][]string{
 // means "all good" (or no rule for this extension).
 func sanityCheck(filename, content string) string {
 	ext := strings.ToLower(extOf(filename))
-	want, ok := expectedPrefixes[ext]
+	rule, ok := expectedPrefixes[ext]
 	if !ok {
 		return ""
 	}
 	trimmed := strings.TrimLeft(content, " \t\r\n")
-	for _, w := range want {
+	for _, w := range rule.accept {
 		if strings.HasPrefix(trimmed, w) {
 			return ""
 		}
 	}
-	got := snippet(trimmed, 40)
-	expected := strings.Join(want, " | ")
-	return fmt.Sprintf("gist-content: warning: expected '%s' at start, got '%s' (gist description leak?)", expected, got)
+	return fmt.Sprintf("gist-content: warning: expected %s at start, got '%s' (gist description leak?)", rule.display, firstChar(trimmed))
+}
+
+// firstChar returns the first rune of s as a string, or empty string if s is
+// empty. Used for the "got '...'" portion of the warning, which the spec
+// shows as a single character (e.g. "got 'g'").
+func firstChar(s string) string {
+	if s == "" {
+		return ""
+	}
+	for _, r := range s {
+		return string(r)
+	}
+	return ""
 }
 
 func extOf(name string) string {
@@ -160,11 +187,3 @@ func extOf(name string) string {
 	return name[i:]
 }
 
-func snippet(s string, n int) string {
-	s = strings.ReplaceAll(s, "\n", "\\n")
-	s = strings.ReplaceAll(s, "\r", "")
-	if len(s) > n {
-		return s[:n] + "..."
-	}
-	return s
-}

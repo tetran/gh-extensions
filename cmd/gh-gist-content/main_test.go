@@ -19,18 +19,28 @@ func TestSanityCheck(t *testing.T) {
 		want     string // empty == no warning
 	}{
 		{"html clean DOCTYPE", "page.html", "<!DOCTYPE html>\n<html></html>", ""},
-		{"html clean leading whitespace", "page.html", "  \n  <html></html>", ""},
+		{"html clean comment", "page.html", "<!-- Option D2 -->\n<html>", ""},
+		{"html clean leading whitespace", "page.html", "  \n  <!DOCTYPE html>", ""},
+		// Per §A4 spec, '<html>' is NOT an accepted start: HTML rule is '<!'.
+		{"html bare element rejected", "page.html", "<html></html>", "warning"},
 		{"html leaked description", "weird.html", "Sample landing page demo\n<!DOCTYPE html>", "warning"},
-		{"htm same rule as html", "old.htm", "Notes here\n<html>", "warning"},
+		{"htm same rule as html", "old.htm", "Notes here\n<!DOCTYPE html>", "warning"},
 		{"json clean object", "data.json", "{\"ok\":true}", ""},
 		{"json clean array", "list.json", "[1,2,3]", ""},
 		{"json leaked", "data.json", "Description leaked here\n{\"ok\":true}", "warning"},
-		{"xml clean", "feed.xml", "<?xml version=\"1.0\"?>", ""},
+		{"xml clean prolog", "feed.xml", "<?xml version=\"1.0\"?>", ""},
+		{"xml clean root", "feed.xml", "<rss></rss>", ""},
 		{"xml leaked", "feed.xml", "RSS demo\n<?xml ?>", "warning"},
 		{"svg clean", "icon.svg", "<svg xmlns=\"...\">", ""},
-		{"unknown ext skipped", "script.py", "anything", ""},
+		{"py shebang", "script.py", "#!/usr/bin/env python\nprint('x')", ""},
+		{"py import", "script.py", "import os\n", ""},
+		{"py from", "script.py", "from os import path\n", ""},
+		{"py def", "script.py", "def main():\n    pass\n", ""},
+		{"py class", "script.py", "class Foo:\n    pass\n", ""},
+		{"py leaked description", "script.py", "A small script demo\nimport os\n", "warning"},
+		{"unknown ext skipped", "script.rb", "anything", ""},
 		{"no extension skipped", "README", "anything", ""},
-		{"uppercase ext", "PAGE.HTML", "<html>", ""},
+		{"uppercase ext", "PAGE.HTML", "<!DOCTYPE html>", ""},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -41,13 +51,23 @@ func TestSanityCheck(t *testing.T) {
 				}
 				return
 			}
-			if !strings.HasPrefix(got, "gist-content: warning: expected '") {
+			if !strings.HasPrefix(got, "gist-content: warning: expected ") {
 				t.Errorf("warning has wrong prefix: %q", got)
 			}
-			if !strings.Contains(got, "(gist description leak?)") {
+			if !strings.HasSuffix(got, "(gist description leak?)") {
 				t.Errorf("warning missing leak suffix: %q", got)
 			}
 		})
+	}
+}
+
+// TestSanityCheck_VerbatimMessage pins the warning to the exact wording used in
+// the §A4 spec (`expected '[' or '{' at start, got 'g'`).
+func TestSanityCheck_VerbatimMessage(t *testing.T) {
+	got := sanityCheck("weird.json", "gist description leaked\n{\"ok\":true}")
+	want := "gist-content: warning: expected '[' or '{' at start, got 'g' (gist description leak?)"
+	if got != want {
+		t.Errorf("verbatim mismatch:\n got=%q\nwant=%q", got, want)
 	}
 }
 
@@ -85,11 +105,11 @@ func TestExtractFile_FixtureLeaked(t *testing.T) {
 	if msg == "" {
 		t.Fatalf("expected warning for leaked HTML, got none")
 	}
-	if !strings.Contains(msg, "expected '<' at start") {
+	if !strings.Contains(msg, "expected '<!' at start") {
 		t.Errorf("warning missing expected fragment: %q", msg)
 	}
-	if !strings.Contains(msg, "Sample landing page demo") {
-		t.Errorf("warning should echo the actual leaked prefix: %q", msg)
+	if !strings.Contains(msg, "got 'S'") {
+		t.Errorf("warning should echo the leaked first char: %q", msg)
 	}
 }
 
@@ -137,7 +157,7 @@ func TestRun_SanityFailExitsOne(t *testing.T) {
 	if ec.Code != exitcode.VerifyFailed {
 		t.Errorf("expected VerifyFailed (1), got %d", ec.Code)
 	}
-	if !strings.Contains(stderr.String(), "gist-content: warning: expected '<' at start") {
+	if !strings.Contains(stderr.String(), "gist-content: warning: expected '<!' at start") {
 		t.Errorf("stderr missing warning: %q", stderr.String())
 	}
 	// Content is still emitted on stdout even when sanity warning fires.
