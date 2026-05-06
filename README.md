@@ -141,3 +141,7 @@ Tests are fixture-driven for the IO-touching code paths so they don't hit
 GitHub. The `probe/` directory holds a small live-API smoke harness used to
 pin the go-gh signatures during initial setup; see
 `internal/ghclient/SIGNATURES.md` for the verification record.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
