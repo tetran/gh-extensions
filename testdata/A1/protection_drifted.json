@@ -1,0 +1,13 @@
+{
+  "strict": true,
+  "contexts": [
+    "pytest (Ubuntu, python alias absent — Issue ",
+    "build",
+    "lint-old"
+  ],
+  "checks": [
+    {"context": "pytest (Ubuntu, python alias absent — Issue ", "app_id": null},
+    {"context": "build", "app_id": null},
+    {"context": "lint-old", "app_id": null}
+  ]
+}

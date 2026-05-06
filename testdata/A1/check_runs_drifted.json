@@ -1,0 +1,10 @@
+{
+  "total_count": 5,
+  "check_runs": [
+    {"name": "pytest (Ubuntu, python alias absent — Issue #33 regression guard)", "status": "completed", "conclusion": "success"},
+    {"name": "build (3.10)", "status": "completed", "conclusion": "success"},
+    {"name": "build (3.11)", "status": "completed", "conclusion": "success"},
+    {"name": "build (3.12)", "status": "completed", "conclusion": "success"},
+    {"name": "lint", "status": "completed", "conclusion": "success"}
+  ]
+}

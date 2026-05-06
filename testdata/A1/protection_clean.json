@@ -1,0 +1,14 @@
+{
+  "url": "https://api.github.com/repos/cli/cli/branches/trunk/protection/required_status_checks",
+  "strict": true,
+  "contexts": [
+    "build (macos-latest)",
+    "build (ubuntu-latest)",
+    "build (windows-latest)"
+  ],
+  "checks": [
+    {"context": "build (macos-latest)", "app_id": null},
+    {"context": "build (ubuntu-latest)", "app_id": null},
+    {"context": "build (windows-latest)", "app_id": null}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "total_count": 4,
+  "check_runs": [
+    {"name": "build (macos-latest)", "status": "completed", "conclusion": "success"},
+    {"name": "build (ubuntu-latest)", "status": "completed", "conclusion": "success"},
+    {"name": "build (windows-latest)", "status": "completed", "conclusion": "success"},
+    {"name": "lint", "status": "completed", "conclusion": "success"}
+  ]
+}
