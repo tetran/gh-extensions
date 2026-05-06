@@ -1,0 +1,17 @@
+{
+  "id": "abc123",
+  "files": {
+    "page.html": {
+      "filename": "page.html",
+      "type": "text/html",
+      "language": "HTML",
+      "content": "<!DOCTYPE html>\n<html>\n<body>Hello</body>\n</html>\n"
+    },
+    "data.json": {
+      "filename": "data.json",
+      "type": "application/json",
+      "language": "JSON",
+      "content": "{\n  \"ok\": true\n}\n"
+    }
+  }
+}
