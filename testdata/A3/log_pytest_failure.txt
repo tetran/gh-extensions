@@ -1,0 +1,10 @@
+2026-05-04T12:00:00.123Z ============================= test session starts ==============================
+2026-05-04T12:00:01.001Z platform linux -- Python 3.11.5, pytest-7.4.0
+2026-05-04T12:00:02.555Z collected 42 items
+2026-05-04T12:00:10.111Z tests/test_archive.py::TestArchive::test_round_trip PASSED
+2026-05-04T12:00:11.222Z tests/test_archive.py::TestArchive::test_flaky_clock FAILED
+2026-05-04T12:00:11.555Z =================================== FAILURES ===================================
+2026-05-04T12:00:11.700Z _________________ TestArchive.test_flaky_clock _________________
+2026-05-04T12:00:11.800Z FAILED tests/test_archive.py::TestArchive::test_flaky_clock - AssertionError: timing
+2026-05-04T12:00:11.999Z ============================== short test summary ==============================
+2026-05-04T12:00:12.000Z FAILED tests/test_archive.py::TestArchive::test_flaky_clock - AssertionError: timing

@@ -1,0 +1,23 @@
+[
+  {
+    "bucket": "fail",
+    "link": "https://github.com/owner/repo/actions/runs/1001/job/55001",
+    "name": "pytest (Ubuntu, py3.11)",
+    "state": "FAILURE",
+    "workflow": "pytest.yml"
+  },
+  {
+    "bucket": "fail",
+    "link": "https://github.com/owner/repo/actions/runs/1002/job/55002",
+    "name": "lint",
+    "state": "FAILURE",
+    "workflow": "lint.yml"
+  },
+  {
+    "bucket": "pass",
+    "link": "https://github.com/owner/repo/actions/runs/1003/job/55003",
+    "name": "build",
+    "state": "SUCCESS",
+    "workflow": "build.yml"
+  }
+]

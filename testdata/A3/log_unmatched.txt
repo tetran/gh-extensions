@@ -1,0 +1,5 @@
+2026-05-04T12:00:00.000Z Running ESLint
+2026-05-04T12:00:01.000Z src/foo.ts:14:5 - error TS6133: 'unused' is declared but its value is never read.
+2026-05-04T12:00:02.000Z 1 problem (1 error, 0 warnings)
+2026-05-04T12:00:03.000Z npm ERR! Lifecycle script `lint` failed with error
+2026-05-04T12:00:04.000Z Process completed with exit code 1.
