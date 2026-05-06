@@ -1,0 +1,9 @@
+# Built extension binaries (each cmd/<name>/<name> is built locally for `gh extension install`)
+cmd/*/gh-*
+!cmd/*/gh-*.go
+
+# Editor / OS
+.DS_Store
+
+# Local Claude Code settings
+.claude/settings.local.json
